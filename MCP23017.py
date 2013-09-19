@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import time
 import quick2wire.i2c as i2c
 import re

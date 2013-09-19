@@ -15,7 +15,10 @@ The focus is on a more generic interface which supports interrupts and (perhaps)
 Dependencies
 ============
 
+Python3
+
 quick2wire.i2c (http://quick2wire.com/)
+
 RPi.GPIO (https://pypi.python.org/pypi/RPi.GPIO)
 
 Features
