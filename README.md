@@ -82,7 +82,7 @@ chip2 = MCP23017(0x21, 1)
 #set some config bits on chip1
 chip1.set_config(IOCON['INTPOL'])
 
-#get ports of chip1 - takes always a dict with keys 'A' and 'B' and the desired RPi GPIO pins
+#generate ports for chip1 - takes always a dict with keys 'A' and 'B' and the desired RPi GPIO interrupt pins
 ports = chip1.generate_ports({'A':4, 'B':17})
 
 #set ports of chip1 as input pins
