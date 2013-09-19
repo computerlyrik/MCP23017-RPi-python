@@ -72,7 +72,15 @@ PortManager supplies the following methods to configure and work with an 8-bit-p
 Usage
 =====
 
+Executing the module
+--------------------
+Reading the chip on address 0x20
+```bash
+sudo ./MCP23017.py 32
+```
+
 Simple polling example
+----------------------
 
 ```python
 from MCP23017 import MCP23017, PortManager, IOCON
