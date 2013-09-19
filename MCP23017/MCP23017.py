@@ -93,7 +93,7 @@ class PortManager:
     self.external_callback = callback
 
   def callback(self, channel):
-    log.info("Interrupt detected on address 0x{0:x} with prefix 0x{1:x}; channel {2}".format(self.parent.ADDRESS, self.PREFIX, channel))
+    log.debug("Interrupt detected on address 0x{0:x} with prefix 0x{1:x}; channel {2}".format(self.parent.ADDRESS, self.PREFIX, channel))
     self.lock.acquire()
     log.debug("Lock aquired!")
     log.debug("Before State is 0b{0:b}".format(self.state))
