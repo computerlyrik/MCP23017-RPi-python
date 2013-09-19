@@ -312,6 +312,6 @@ if __name__ == "__main__":
     import sys
     logging.basicConfig()
     logging.getLogger( "MCP23017" ).setLevel( logging.DEBUG )
-    chip = new MCP23017(sys.argv[1])
+    chip = MCP23017(sys.argv[1])
     for i in range(0x1B):
       byte = chip.read(i)
