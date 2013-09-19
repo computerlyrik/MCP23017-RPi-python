@@ -8,7 +8,7 @@ setup(
     packages=['MCP23017'],
     scripts=[],
     url='https://github.com/computerlyrik/MCP23017-RPi-python',
-    license='LICENSE',
+    license='http://www.apache.org/licenses/LICENSE-2.0',
     description='Interfacing MCP23017 with Raspberry Pi',
     long_description=open('README.md').read(),
     install_requires=[
