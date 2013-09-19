@@ -42,29 +42,64 @@ Port manager supports more high level operations.
 PortManager supplies the following methods to configure and work with an 8-bit-port (like Arduino lib on http://playground.arduino.cc/Main/MCP23S17 with more features)
 
 *Set I/O mode*
-pin_mode
+`pin_mode`
 
 *Set Pullups*
-pullup_mode
+`pullup_mode`
 
 *Set Input Invert*
-input_invert
+`input_invert`
 
 *Interrupt enabling*
-interrupt_enable
+`interrupt_enable`
 
 *Set Inerrupt compare*
-interrupt_compare
+`interrupt_compare`
 
 *Define Interrupt compare*
-interrupt_compare_value
+`interrupt_compare_value`
 
 - Reading and writing
-digital_write
-digital_read
+`digital_write`
+`digital_read`
 
-- Additionally it can handle a interrupt callback by passing a method
-set_callback
+- Additionally it can handle a interrupt callback by passing a method:
+`set_callback`
+
+Usage
+=====
+
+Simple polling example
+
+```python
+from MCP23017 import MCP23017, PortManager, IOCON
+
+#create chip with bank=1 mode on address 0x20
+chip1 = MCP23017(0x20, 1)
+#create chip with bank=0 mode on address 0x21
+chip2 = MCP23017(0x21, 1)
+
+#set some config bits on chip1
+chip1.set_config(IOCON['INTPOL'])
+
+#get ports of chip1 - takes always a dict with keys 'A' and 'B' and the desired RPi GPIO pins
+ports = chip1.generate_ports({'A':4, 'B':17})
+
+#set ports of chip1 as input pins
+for name,port in ports.items():
+  print(" Setting up port "+name)
+  #Set port to input pin
+  port.pin_mode(0xff)
+
+while True:
+  for name,port in ports.items():
+    print(" Reading port "+name)
+    print(port.digital_read())
+
+```
+
+for setting up callbacks see also https://github.com/computerlyrik/PowerCounter
+
 
 
 TODO
