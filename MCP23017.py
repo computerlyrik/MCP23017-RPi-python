@@ -306,3 +306,12 @@ class MCP23017(object):
     BUS.transaction(
       i2c.writing_bytes(self.ADDRESS, register ,value),
     )
+
+#Reads the chip with bank=0 mode
+if __name__ == "__main__":
+    import sys
+    logging.basicConfig()
+    logging.getLogger( "MCP23017" ).setLevel( logging.DEBUG )
+    chip = new MCP23017(sys.argv[1])
+    for i in range(0x1B):
+      byte = chip.read(i)
