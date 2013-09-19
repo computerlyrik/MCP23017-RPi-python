@@ -7,31 +7,6 @@ from RPi import GPIO
 
 
 # Support library for MCP23017 on Raspberry pi
-# Currently following features are supported
-# - Initialize Chip with address on i2c bus
-# - Initialize Chip with Bank-Mode configured as on or off
-# - Read from specific Register
-# - Write to specific register
-# - Setting a specific config in IOCON
-# - Unsetting a specific config in IOCON
-# - Initialize 
-
-# - TODO: make PortManager compatible to Bank=0 mode 
-
-# - TODO: implement 16 bit mode, affects:
-# - read() method
-# - write() method
-# - interrupt mirrors setting(?)
-#  
-# there is no datasheet - althought the PFY claims to have one
-# pinouts have been determined by checking the controller outputs
-# it contains two HD44780 compatible controllers selected by E and E2 
-
-# for a pinout and pinmap see the accompanying documentation directory
-
-# usage
-# shield = IOShield()
-# display.send_text("Up up in the butt", 1, 2) # line, chip - this will display the text in the 3rd line
 
 log = logging.getLogger("MCP23017")
 BUS = i2c.I2CMaster()
