@@ -133,7 +133,7 @@ class PortManager:
     #call callback after lock release
     log.debug("Sending changes 0b{0:b} to callback method".format(changes))
     self.external_callback(changes, self.PREFIX, self.parent.ADDRESS)
-    if accuracy_callback:
+    if self.accuracy_callback:
       self.accuracy += 1
       if (self.state == 0):
         self.accuracy_callback(self.accuracy)
@@ -239,11 +239,14 @@ class MCP23017(object):
   def REGISTER(self):
     return REGISTER_MAPPING[self.BANK]
 
-  def __init__(self, address, bank = 0):
+  def __init__(self, address, bank = None, toggle_mode = False):
     log.info("Initialize MCP23017 on 0x{0:x}".format(address))
     #self._lock = Lock()
     self.ADDRESS = address
-    self.bank_mode(bank)
+    if bank not None:
+      self.bank_mode(bank)
+    if toggle_mode:
+      self.enable_toggle_mode()
 
   def bank_mode(self, bank):
     self.BANK = bank
@@ -333,7 +336,7 @@ class MCP23017(object):
         i2c.writing_bytes(self.ADDRESS, register ,value),
       )
 
-#Reads the chip with bank=0 mode
+#Reads the chip without setting bank mode
 if __name__ == "__main__":
     import sys
     logging.basicConfig()
