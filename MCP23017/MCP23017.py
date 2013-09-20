@@ -64,6 +64,9 @@ class PortManager:
   parent = None
   PREFIX = None
 
+  accuracy = 0 #accuracy tells how many callbacks have been executed till gpio goes back to zero
+  accuracy_callback = None #callback to execute if accuracy reporting is wanted
+
 
   ## Valid prefix values:
   # bank = 0 : 0, 1
@@ -130,6 +133,12 @@ class PortManager:
     #call callback after lock release
     log.debug("Sending changes 0b{0:b} to callback method".format(changes))
     self.external_callback(changes, self.PREFIX, self.parent.ADDRESS)
+    if accuracy_callback:
+      if (self.state == 0):
+        self.accuracy_callback(self.accuracy)
+        self.accuracy = 0
+      else:
+        self.accuracy++
 
   ##########################
   #Arduino-Lib like methods

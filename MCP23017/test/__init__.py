@@ -18,5 +18,5 @@ read(chip)
 print("BANK = 0, SEQOP = 1, MIRROR = 1")
 chip = MCP23017(address) #does not matter
 port = chip.generate_ports(4) #NO dict = 16 bit mode!
-read(chip)
+read(chip) # should show 16 bit words
 port.digital_read()
