@@ -247,7 +247,7 @@ class MCP23017(object):
 
   def bank_mode(self, bank):
     self.BANK = bank
-    log.info("Bank set to {0:d}".format(mode))
+    log.info("Bank set to {0:d}".format(bank))
     #EVERYTHING else goes to zero - some magic to write bit on both settings
     if self.BANK == 1: #assume has been bank=0 before
       BUS.transaction( 
