@@ -59,7 +59,7 @@ MODE_NOINVERT = 0
 
 class PortManager:
 
-  state = 0b00000000
+  state = 0
   external_callback = None
   parent = None
   PREFIX = None
@@ -82,10 +82,7 @@ class PortManager:
 
   def set_callback(self, callback):
     log.debug("Set callback "+str(callback))
-    self.state = BUS.transaction(
-      #Set port to input pin
-      i2c.writing_bytes(self.parent.ADDRESS,self._resolve_register(self.parent.REGISTER['GPIO'])),
-      i2c.reading(self.parent.ADDRESS, 1))[0][0] ^ 0b11111111
+    self.state = self.parent.read(_resolve_register(self.parent.REGISTER['GPIO']))
     log.debug("Re-Setting initial state of port is now 0b{0:b}".format(self.state))
     if self.external_callback is None:
       log.debug("first call of set_callback: enabling RPi interrupt")
@@ -227,6 +224,8 @@ class MCP23017(object):
   ADDRESS = None
   BANK = None
 
+  TOGGLE_MODE = False
+
   @property
   def REGISTER(self):
     return REGISTER_MAPPING[self.BANK]
@@ -255,6 +254,7 @@ class MCP23017(object):
       self.bank_mode(0)
       log.info("going to byte Mode")
       self.set_config(IOCON['SEQOP'])
+      self.TOGGLE_MODE = True
 
 
   ################
@@ -269,9 +269,11 @@ class MCP23017(object):
       ports = {}
       ports[str(self.ADDRESS)+'_A'] = PortManager(self, 0, interrupt_s['A'])
       ports[str(self.ADDRESS)+'_B'] = PortManager(self, 0x10 if self.BANK else 1, interrupt_s['B'])
-      return ports
     elif isinstance(x, basestring): # 16-bit configuration - NOT SUPPORTED
-        return None
+      self.enable_toggle_mode()
+      self.set_config(IOCON['MIRROR'])
+      ports[0] = PortManager(self,0,interrupt_s)
+    return ports
 
   # to comfortably set and unset chip config
   def set_config(self, config):
@@ -285,54 +287,42 @@ class MCP23017(object):
   # Support bitwise setting and unsetting of register values
   def set_register(self, register, config):
       log.debug("Register 0x{0:x} adding: 0b{1:b}".format(register, config))
-      register_value = BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, register),
-              i2c.reading(self.ADDRESS, 1))
-      log.debug("Register before 0b{0:b}".format(register_value[0][0]))
-      BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, register, register_value[0][0] | config))
-      log.debug("Register after 0b{0:b}".format(register_value[0][0] | config))
+      register_value = self.read(register)
+      log.debug("Register before 0b{0:b}".format(register_value))
+      self.write(register, register_value | config)
+      log.debug("Register after 0b{0:b}".format(register_value | config))
 
   def unset_register(self, register, config):
       log.debug("Register 0x{0:x}, removing: 0b{1:b}".format(register, config))
-      register_value = BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, register),
-              i2c.reading(self.ADDRESS, 1))
-      log.debug("Register before 0b{0:b}".format(register_value[0][0]))
-      BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, register, register_value[0][0] & ~ config))
-      log.debug("Register after 0b{0:b}".format(register_value[0][0] & (config ^ 0b11111111)))
+      register_value = self.read(register)
+      log.debug("Register before 0b{0:b}".format(register_value))
+      self.write(register, register_value & (config ^ 0b11111111))
+      log.debug("Register after 0b{0:b}".format(register_value & (config ^ 0b11111111)))
 
   # read and write to specific register
   def read(self, register):
     byte = BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, register),
-              i2c.reading(self.ADDRESS, 1))
-    log.debug("Reading from address {0:#4X} register 0x{1:#4X} value {2:#10b}".format(self.ADDRESS, register, byte[0][0]))
-    return byte[0][0]
-
-  #If chip is in toggle mode this will return ports 0bBBBBBBBBAAAAAAAA
-  def readWord(self, register):
-    byte = BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, register),
-              i2c.reading(self.ADDRESS, 2))
-    log.debug("readWord from address {0:#4X} register 0x{1:#4X} value {2:#10b}".format(self.ADDRESS, register, byte[0][0]))
-    return byte[0][0] | (byte[0][1] << 8)
+              i2c.reading(self.ADDRESS, 2 if self.TOGGLE_MODE else 1))
+    log.debug("Reading from address {0:#4X} register 0x{1:#4X} value {2:#10b}".format(self.ADDRESS, register, byte[0]))
+    if self.TOGGLE_MODE:
+      return (byte[0][1] << 8) | byte[0][0] 
+    else:
+      return byte[0][0]
   
   def write(self, register, value):
     log.debug("Writing to address {0:#4X} register 0x{1:#4X} value {2:#10b}".format(self.ADDRESS, register, value))
-    BUS.transaction(
-      i2c.writing_bytes(self.ADDRESS, register ,value),
-    )
+    if self.TOGGLE_MODE:
+      a = value & 0b11111111
+      b = (value >> 8) & 0b11111111
+      BUS.transaction(
+        i2c.writing_bytes(self.ADDRESS, register, a, b),
+      )
+    else:
+      BUS.transaction(
+        i2c.writing_bytes(self.ADDRESS, register ,value),
+      )
 
-  #If chip is in toggle mode this will take values for ports 0bBBBBBBBBAAAAAAAA
-  def writeWord(self, register, value):
-    log.debug("writeWord to address {0:#4X} register 0x{1:#4X} value {2:#10b}".format(self.ADDRESS, register, value))
-    a = value & 0b11111111
-    b = (value >> 8) & 0b11111111
-    BUS.transaction(
-      i2c.writing_bytes(self.ADDRESS, register, a, b),
-    )
 #Reads the chip with bank=0 mode
 if __name__ == "__main__":
     import sys
