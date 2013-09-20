@@ -313,11 +313,12 @@ class MCP23017(object):
     byte = BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, register),
               i2c.reading(self.ADDRESS, 2 if self.TOGGLE_MODE else 1))
-    log.debug("Reading from address {0:#4X} register 0x{1:#4X} value {2:#10b}".format(self.ADDRESS, register, byte[0]))
     if self.TOGGLE_MODE:
-      return (byte[0][1] << 8) | byte[0][0] 
+      data = (byte[0][1] << 8) | byte[0][0] 
     else:
-      return byte[0][0]
+      data = byte[0][0]
+    log.debug("Reading from address {0:#4X} register 0x{1:#4X} value {2:#10b}".format(self.ADDRESS, register, data))
+    return data
   
   def write(self, register, value):
     log.debug("Writing to address {0:#4X} register 0x{1:#4X} value {2:#10b}".format(self.ADDRESS, register, value))
