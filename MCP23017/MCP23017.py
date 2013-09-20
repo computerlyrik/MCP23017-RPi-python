@@ -85,7 +85,7 @@ class PortManager:
 
   def set_callback(self, callback):
     log.debug("Set callback "+str(callback))
-    self.state = self.parent.read(self._resolve_register(self.parent.REGISTER['GPIO'])) ^ 0b11111111
+    self.state = self.parent.read(self._resolve_register(self.parent.REGISTER['GPIO']))
     log.debug("Re-Setting initial state of port is now 0b{0:b}".format(self.state))
     if self.external_callback is None:
       log.debug("first call of set_callback: enabling RPi interrupt")
@@ -112,9 +112,9 @@ class PortManager:
 
     intf = erg[0][0]
     log.debug("INTF was 0b{0:b}".format(intf))
-    intcap = (erg[1][0] ^ 0b11111111)
+    intcap = erg[1][0]
     log.debug("INTCAP was 0b{0:b}".format(intcap))
-    gpio = (erg[2][0] ^ 0b11111111)
+    gpio = erg[2][0]
     log.debug("GPIO was 0b{0:b}".format(gpio))
 
     current = intf | gpio
