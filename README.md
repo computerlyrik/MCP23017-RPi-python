@@ -119,3 +119,4 @@ TODO
  - read() method
  - write() method
  - interrupt mirrors setting(?) 
+- make portmanager working without interrupts
