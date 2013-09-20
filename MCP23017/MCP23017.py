@@ -243,7 +243,7 @@ class MCP23017(object):
     log.info("Initialize MCP23017 on 0x{0:x}".format(address))
     #self._lock = Lock()
     self.ADDRESS = address
-    if bank not None:
+    if not bank == None:
       self.bank_mode(bank)
     if toggle_mode:
       self.enable_toggle_mode()
