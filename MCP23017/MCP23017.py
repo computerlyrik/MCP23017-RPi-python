@@ -245,7 +245,7 @@ class MCP23017(object):
     self.ADDRESS = address
     self.bank_mode(bank)
 
-  def bank_mode(self, mode):
+  def bank_mode(self, bank):
     self.BANK = bank
     log.info("Bank set to {0:d}".format(mode))
     #EVERYTHING else goes to zero - some magic to write bit on both settings
