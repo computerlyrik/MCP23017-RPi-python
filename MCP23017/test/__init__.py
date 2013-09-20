@@ -6,12 +6,12 @@ def read(chip):
 address = 0x20
 
 print("BANK = 0, SEQOP = 0")
-chip = MCP23017(address)
+chip = MCP23017(address, 0)
 ports = chip.generate_ports({'A':4, 'B':17})
 read(chip)
 
 print("BANK = 1, SEQOP = 0")
-chip = MCP23017(address)
+chip = MCP23017(address, 0)
 ports = chip.generate_ports({'A':4, 'B':17})
 read(chip)
 
