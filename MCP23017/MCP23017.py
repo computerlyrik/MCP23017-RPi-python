@@ -134,11 +134,11 @@ class PortManager:
     log.debug("Sending changes 0b{0:b} to callback method".format(changes))
     self.external_callback(changes, self.PREFIX, self.parent.ADDRESS)
     if accuracy_callback:
+      self.accuracy += 1
       if (self.state == 0):
         self.accuracy_callback(self.accuracy)
         self.accuracy = 0
-      else:
-        self.accuracy++
+
 
   ##########################
   #Arduino-Lib like methods
