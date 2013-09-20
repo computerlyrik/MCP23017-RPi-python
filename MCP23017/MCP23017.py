@@ -299,7 +299,7 @@ class MCP23017(object):
       self.write(register, register_value & (config ^ 0b11111111))
       log.debug("Register after 0b{0:b}".format(register_value & (config ^ 0b11111111)))
 
-  # read and write to specific register
+  # read and write to specific register - either 8 bit and 16 bit mode are supported implicit by TOGGLE flag
   def read(self, register):
     byte = BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, register),
